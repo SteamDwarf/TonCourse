@@ -29,7 +29,15 @@ contract TodoList with Deployable, Ownable {
             body: SetTask{task: msg.task}.toCell()
         });
 
-        self.reply("Todo has created".asComment());
+    }
+
+    receive("todo_created") {
+        send(SendParameters{
+            to: self.owner,
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            body: "Todo created".asComment()
+        })
     }
 
     get fun todosCount(): Int {

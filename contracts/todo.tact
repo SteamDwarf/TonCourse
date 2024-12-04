@@ -17,7 +17,7 @@ contract Todo with Deployable {
     receive(msg: SetTask) {
         require(self.todoList == sender(), "You don`t have permission");
         self.task = msg.task;
-        self.reply("Done".asComment());
+        self.reply("todo_created".asComment());
     }
 
     receive("complete") {
