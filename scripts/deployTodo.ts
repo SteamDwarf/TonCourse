@@ -1,11 +1,11 @@
 import { toNano } from '@ton/core';
-import { Random } from '../wrappers/Random';
+import { Todo } from '../wrappers/Todo';
 import { NetworkProvider } from '@ton/blueprint';
 
 export async function run(provider: NetworkProvider) {
-    const random = provider.open(await Random.fromInit());
+    const todo = provider.open(await Todo.fromInit());
 
-    await random.send(
+    await todo.send(
         provider.sender(),
         {
             value: toNano('0.05'),
@@ -16,7 +16,7 @@ export async function run(provider: NetworkProvider) {
         }
     );
 
-    await provider.waitForDeploy(random.address);
+    await provider.waitForDeploy(todo.address);
 
-    // run methods on `random`
+    // run methods on `todo`
 }

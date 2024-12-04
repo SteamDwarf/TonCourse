@@ -1,11 +1,11 @@
 import { toNano } from '@ton/core';
-import { Functions } from '../wrappers/Functions';
+import { TodoList } from '../wrappers/TodoList';
 import { NetworkProvider } from '@ton/blueprint';
 
 export async function run(provider: NetworkProvider) {
-    const functions = provider.open(await Functions.fromInit());
+    const todoList = provider.open(await TodoList.fromInit());
 
-    await functions.send(
+    await todoList.send(
         provider.sender(),
         {
             value: toNano('0.05'),
@@ -16,7 +16,7 @@ export async function run(provider: NetworkProvider) {
         }
     );
 
-    await provider.waitForDeploy(functions.address);
+    await provider.waitForDeploy(todoList.address);
 
-    // run methods on `functions`
+    // run methods on `todoList`
 }

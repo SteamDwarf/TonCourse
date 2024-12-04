@@ -29,4 +29,5 @@ contract Map with Deployable {
     get fun value(key: Int): Int? {
         return self.intMap.get(key);
     }
+
 }
