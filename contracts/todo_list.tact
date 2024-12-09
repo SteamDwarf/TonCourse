@@ -15,9 +15,7 @@ contract TodoList with Deployable, Ownable {
     receive(msg: CreateTodo) {
         self.requireOwner();
 
-        self.todosCount += 1;
-
-        let initTodo = initOf Todo(self.todosCount, myAddress());
+        let initTodo = initOf Todo(self.todosCount + 1, myAddress());
         let todoAddress = contractAddress(initTodo);
 
         send(SendParameters{
@@ -32,6 +30,8 @@ contract TodoList with Deployable, Ownable {
     }
 
     receive("todo_created") {
+        self.todosCount += 1;
+
         send(SendParameters{
             to: self.owner,
             value: 0,
