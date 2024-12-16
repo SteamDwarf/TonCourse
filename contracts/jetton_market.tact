@@ -64,5 +64,14 @@ contract JettonMarket with Deployable, Ownable {
         }
     }
 
+    get fun get_jetton_master_address(): Address {
+        return self.jetton_master_address;
+    }
+
+    get fun get_jetton_wallet_address(owner: Address): Address {
+        let wallet = initOf JettonWallet(owner, self.jetton_master_address);
+        return contractAddress(wallet);
+    }
+
     
 }

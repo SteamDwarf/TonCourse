@@ -1,4 +1,4 @@
-import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
+import { Blockchain, EventAccountCreated, SandboxContract, TreasuryContract } from '@ton/sandbox';
 import { toNano } from '@ton/core';
 import { JettonMarket } from '../wrappers/JettonMarket';
 import '@ton/test-utils';
@@ -48,10 +48,38 @@ describe('JettonMarket', () => {
     it("buy tokkens", async () => {
         const amount = 100n;
 
+        /* const response = await jettonMarket.send(
+            deployer.getSender(),
+            {
+                value: amount * jettonPrice + toNano('0.15')
+            },
+            {
+                $$type: 'Buy',
+                query_id: 0n,
+                amount: amount,
+            }
+        ); */
+
+
+        const jettonMaster = blockchain.openContract(await JettonMaster.fromInit(jettonMarket.address, jettonContent));
+        console.log(jettonMaster);
+        expect((await jettonMaster.getGetJettonData()).total_supply).toBe(100n);
+
+        const jettonWallet = blockchain.openContract(await JettonWallet.fromInit(deployer.address, jettonMaster.address));
+        expect((await jettonWallet.getGetWalletData()).balance).toBe(100n);
+
+
+        /* const jettonMaster = blockchain.openContract(await JettonMaster.fromInit(jettonMarket.address, jettonContent));
+        console.log(await jettonMaster.getGetJettonData()); */
+    })
+
+    it("get wallet address", async () => {
+        const amount = 100n;
+
         const response = await jettonMarket.send(
             deployer.getSender(),
             {
-                value: amount * jettonPrice + toNano('0.1')
+                value: amount * jettonPrice + toNano('0.15')
             },
             {
                 $$type: 'Buy',
@@ -60,15 +88,9 @@ describe('JettonMarket', () => {
             }
         );
 
+        expect(response.events.at(-2)?.type).toBe('account_created');
 
-        const jettonMaster = blockchain.openContract(await JettonMaster.fromInit(jettonMarket.address, jettonContent));
-        expect((await jettonMaster.getGetJettonData()).total_supply).toBe(10n);
-
-        const jettonWallet = blockchain.openContract(await JettonWallet.fromInit(deployer.address, jettonMaster.address));
-        expect((await jettonWallet.getGetWalletData()).balance).toBe(10n);
-
-
-        /* const jettonMaster = blockchain.openContract(await JettonMaster.fromInit(jettonMarket.address, jettonContent));
-        console.log(await jettonMaster.getGetJettonData()); */
+        const walletAddress = (await jettonMarket.getGetJettonWalletAddress(deployer.getSender().address)).toString()
+        expect((response.events.at(-2) as EventAccountCreated)?.account.toString()).toBe(walletAddress);
     })
 });
